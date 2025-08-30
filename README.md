@@ -1,95 +1,97 @@
-🗃️ Customized Virtual File System in C
-This project is a simplified, custom-built virtual file system implemented in C, inspired by the Linux File System. It supports basic file operations such as create, read, write, open, close, ls, and more — allowing users to interact with files in a simulated environment using terminal-like commands.
+# Customised Virtual File System (CDFS)
 
-🛠️ Features
-Create and manage regular files
+## 📌 Overview
 
-Open files in different modes (read, write, read+write)
+This project implements a **Customised Virtual File System (CDFS)** in C. It simulates the core functionalities of a file system within a single program, providing users with the ability to create, open, read, write, delete, and manage files via custom commands.
 
-Read/write data into files
+The system mimics the behaviour of traditional file systems using in-memory data structures such as **inode tables, superblocks, file tables, and UFDT (User File Descriptor Table)**.
 
-View file information (stat, fstat)
+---
 
-Maintain file permissions and reference counts
+## ⚙️ Features
 
-Truncate, delete, and seek within files
+* **File Operations:**
 
-Command help system (man, help)
+  * Create new files with permissions
+  * Read and write file contents
+  * Open and close files
+  * Delete files (`rm`)
+  * Truncate (empty) files
+* **File Metadata Management:**
 
-📁 Data Structures Used
-SUPERBLOCK
-Keeps track of the total and free inodes (files).
+  * View file details using `stat` or `fstat`
+  * Manage file offsets with `lseek`
+  * Track inode, file size, and permissions
+* **System Commands:**
 
-c
-Copy
-Edit
-typedef struct superblock {
-    int TotalInodes;
-    int FreeInode;
-} SUPERBLOCK;
-INODE
-Describes each file with metadata and data buffer.
+  * `ls` → List all existing files
+  * `help` → Display available commands
+  * `man <command>` → Show manual for a specific command
+  * `clear` → Clear the console
+  * `exit` → Terminate the VFS
 
-c
-Copy
-Edit
-typedef struct inode {
-    char FileName[50];
-    int inodeNumber;
-    int FileSize;
-    int FileActualSize;
-    int FileType;
-    char *Buffer;
-    int LinkCount;
-    int ReferenceCount;
-    int permission;
-    struct inode *next;
-} INODE;
-FILETABLE
-Stores the mode and offset for opened files.
+---
 
-c
-Copy
-Edit
-typedef struct filetable {
-    int readoffset;
-    int writeoffset;
-    int count;
-    int mode;
-    PINODE ptrinode;
-} FILETABLE;
-UFDT
-User File Descriptor Table to manage open files.
+## 📂 Data Structures Used
 
-c
-Copy
-Edit
-typedef struct ufdt {
-    PFILETABLE ptrfiletable;
-} UFDT;
-🧑‍💻 How It Works
-On startup, the virtual file system initializes memory structures.
+* **SUPERBLOCK** → Tracks total and free inodes
+* **INODE** → Stores file metadata (name, type, size, permissions)
+* **FILETABLE** → Holds offsets, mode, and reference to inode
+* **UFDT (User File Descriptor Table)** → Array mapping file descriptors to FILETABLE entries
 
-File operations (like create, read, write) can be executed via command-line input.
+---
 
-Each file is associated with an inode, tracked in a linked list.
+## 🖥️ Commands
 
-Open files are managed using a UFDT array.
+| Command  | Description                          | Usage                                        |
+| -------- | ------------------------------------ | -------------------------------------------- |
+| create   | Create a new file with permissions   | `create <filename> <permission>`             |
+| open     | Open an existing file                | `open <filename> <mode>`                     |
+| read     | Read data from a file                | `read <filename> <bytes>`                    |
+| write    | Write data into a file               | `write <filename>`                           |
+| ls       | List all files                       | `ls`                                         |
+| stat     | Show file details by name            | `stat <filename>`                            |
+| fstat    | Show file details by file descriptor | `fstat <fd>`                                 |
+| truncate | Remove data from file                | `truncate <filename>`                        |
+| close    | Close a file                         | `close <filename>`                           |
+| closeall | Close all files                      | `closeall`                                   |
+| lseek    | Change file offset                   | `lseek <filename> <offset> <start/curr/end>` |
+| rm       | Delete a file                        | `rm <filename>`                              |
+| man      | Show command manual                  | `man <command>`                              |
+| help     | Show all available commands          | `help`                                       |
+| clear    | Clear screen                         | `clear`                                      |
+| exit     | Exit the VFS                         | `exit`                                       |
 
-📌 Commands Supported
-Command	Description
-create	Create a new regular file
-open	Open an existing file with a mode
-read	Read data from a file
-write	Write data into a file
-ls	List all files
-stat	Display file information using name
-fstat	Display file information using descriptor
-truncate	Clear contents of a file
-rm	Delete a file
-lseek	Change the read/write offset of a file
-close	Close a specific file
-closeall	Close all open files
-man	Get usage details for a command
-help	List all available commands
-exit	Exit the file system
+---
+
+## 🚀 How to Run
+
+1. Compile the program:
+
+   ```bash
+   g++ CDFS.cpp -o cdfs
+   ```
+2. Run the executable:
+
+   ```bash
+   ./cdfs
+   ```
+3. Enter commands in the terminal (e.g., `create demo.txt 3`).
+
+---
+
+## 📌 Permissions & Modes
+
+* **Permissions:**
+
+  * `1` → Read Only
+  * `2` → Write Only
+  * `3` → Read & Write
+* **Modes (for open):**
+
+  * `1` → Read
+  * `2` → Write
+  * `3` → Read & Write
+
+
+This project is licensed under the **MIT License**.
